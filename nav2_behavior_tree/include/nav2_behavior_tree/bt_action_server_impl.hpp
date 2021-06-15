@@ -68,6 +68,8 @@ BtActionServer<ActionT>::BtActionServer(
   if (!node->has_parameter("groot_zmq_server_port")) {
     node->declare_parameter("groot_zmq_server_port", 1667);
   }
+
+  client_node_name_ = std::string(node->get_name()) + "_rclcpp_node";
 }
 
 template<class ActionT>
@@ -85,7 +87,7 @@ bool BtActionServer<ActionT>::on_configure()
   // use suffix '_rclcpp_node' to keep parameter file consistency #1773
   auto options = rclcpp::NodeOptions().arguments(
     {"--ros-args",
-      "-r", std::string("__node:=") + node->get_name() + "_rclcpp_node",
+      "-r", std::string("__node:=") + client_node_name_,
       "--"});
   // Support for handling the topic-based goal pose from rviz
   client_node_ = std::make_shared<rclcpp::Node>("_", options);

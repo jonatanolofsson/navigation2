@@ -141,7 +141,8 @@ public:
     rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node,
     const std::vector<std::string> & plugin_lib_names,
     const FeedbackUtils & feedback_utils,
-    nav2_bt_navigator::NavigatorMuxer * plugin_muxer)
+    nav2_bt_navigator::NavigatorMuxer * plugin_muxer,
+    const std::string& client_node_name="")
   {
     auto node = parent_node.lock();
     logger_ = node->get_logger();
@@ -153,15 +154,28 @@ public:
     std::string default_bt_xml_filename = getDefaultBTFilepath(parent_node);
 
     // Create the Behavior Tree Action Server for this navigator
-    bt_action_server_ = std::make_unique<nav2_behavior_tree::BtActionServer<ActionT>>(
-      node,
-      getName(),
-      plugin_lib_names,
-      default_bt_xml_filename,
-      std::bind(&Navigator::onGoalReceived, this, std::placeholders::_1),
-      std::bind(&Navigator::onLoop, this),
-      std::bind(&Navigator::onPreempt, this, std::placeholders::_1),
-      std::bind(&Navigator::onCompletion, this, std::placeholders::_1));
+    if (client_node_name == "") {
+      bt_action_server_ = std::make_unique<nav2_behavior_tree::BtActionServer<ActionT>>(
+        node,
+        getName(),
+        plugin_lib_names,
+        default_bt_xml_filename,
+        std::bind(&Navigator::onGoalReceived, this, std::placeholders::_1),
+        std::bind(&Navigator::onLoop, this),
+        std::bind(&Navigator::onPreempt, this, std::placeholders::_1),
+        std::bind(&Navigator::onCompletion, this, std::placeholders::_1));
+    } else {
+      bt_action_server_ = std::make_unique<nav2_behavior_tree::BtActionServer<ActionT>>(
+        node,
+        getName(),
+        plugin_lib_names,
+        default_bt_xml_filename,
+        std::bind(&Navigator::onGoalReceived, this, std::placeholders::_1),
+        std::bind(&Navigator::onLoop, this),
+        std::bind(&Navigator::onPreempt, this, std::placeholders::_1),
+        std::bind(&Navigator::onCompletion, this, std::placeholders::_1),
+        client_node_name);
+    }
 
     bool ok = true;
     if (!bt_action_server_->on_configure()) {

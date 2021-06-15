@@ -56,6 +56,33 @@ public:
     OnCompletionCallback on_completion_callback);
 
   /**
+   * @brief A constructor for nav2_behavior_tree::BtActionServer class
+   */
+  explicit BtActionServer(
+    const rclcpp_lifecycle::LifecycleNode::WeakPtr & parent,
+    const std::string & action_name,
+    const std::vector<std::string> & plugin_lib_names,
+    const std::string & default_bt_xml_filename,
+    OnGoalReceivedCallback on_goal_received_callback,
+    OnLoopCallback on_loop_callback,
+    OnPreemptCallback on_preempt_callback,
+    OnCompletionCallback on_completion_callback,
+    const std::string client_node_name)
+  :
+    BtActionServer(
+      parent,
+      action_name,
+      plugin_lib_names,
+      default_bt_xml_filename,
+      on_goal_received_callback,
+      on_loop_callback,
+      on_preempt_callback,
+      on_completion_callback)
+  {
+    client_node_name_ = client_node_name;
+  }
+
+  /**
    * @brief A destructor for nav2_behavior_tree::BtActionServer class
    */
   ~BtActionServer();
@@ -238,6 +265,9 @@ protected:
 
   // Default timeout value while waiting for response from a server
   std::chrono::milliseconds default_server_timeout_;
+
+  // Action client node name
+  std::string client_node_name_;
 
   // Parameters for Groot monitoring
   bool enable_groot_monitoring_ = true;

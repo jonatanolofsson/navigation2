@@ -112,7 +112,8 @@ BtNavigator::on_configure(const rclcpp_lifecycle::State & /*state*/)
   feedback_utils.transform_tolerance = transform_tolerance_;
 
   if (!pose_navigator_->on_configure(
-      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_))
+      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_,
+      std::string(get_name()) + "_" + pose_navigator_->getName() + "_rclcpp_node"))
   {
     return nav2_util::CallbackReturn::FAILURE;
   }
@@ -122,7 +123,8 @@ BtNavigator::on_configure(const rclcpp_lifecycle::State & /*state*/)
       get_parameter("pose_groot_server_port").as_int());
 
   if (!poses_navigator_->on_configure(
-      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_))
+      shared_from_this(), plugin_lib_names, feedback_utils, &plugin_muxer_,
+      std::string(get_name()) + "_" + poses_navigator_->getName() + "_rclcpp_node"))
   {
     return nav2_util::CallbackReturn::FAILURE;
   }
