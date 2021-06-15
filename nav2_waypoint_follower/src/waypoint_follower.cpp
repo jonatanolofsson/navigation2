@@ -62,7 +62,11 @@ WaypointFollower::on_configure(const rclcpp_lifecycle::State & /*state*/)
   new_args.push_back(std::string("__node:=") + this->get_name() + "_rclcpp_node");
   new_args.push_back("--");
   client_node_ = std::make_shared<rclcpp::Node>(
-    "_", "", rclcpp::NodeOptions().arguments(new_args));
+    "_", "",
+    rclcpp::NodeOptions()
+      .arguments(new_args)
+      .append_parameter_override("use_sim_time", get_parameter("use_sim_time").as_bool())
+      .automatically_declare_parameters_from_overrides(true));
 
   nav_to_pose_client_ = rclcpp_action::create_client<ClientT>(
     client_node_, "navigate_to_pose");

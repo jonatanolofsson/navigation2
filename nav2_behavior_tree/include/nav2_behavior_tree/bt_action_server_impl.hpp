@@ -85,10 +85,13 @@ bool BtActionServer<ActionT>::on_configure()
   }
 
   // use suffix '_rclcpp_node' to keep parameter file consistency #1773
-  auto options = rclcpp::NodeOptions().arguments(
-    {"--ros-args",
-      "-r", std::string("__node:=") + client_node_name_,
-      "--"});
+  auto options = rclcpp::NodeOptions()
+    .arguments(
+      {"--ros-args",
+        "-r", std::string("__node:=") + client_node_name_,
+        "--"})
+    .append_parameter_override("use_sim_time", node->get_parameter("use_sim_time").as_bool())
+    .automatically_declare_parameters_from_overrides(true);
   // Support for handling the topic-based goal pose from rviz
   client_node_ = std::make_shared<rclcpp::Node>("_", options);
 

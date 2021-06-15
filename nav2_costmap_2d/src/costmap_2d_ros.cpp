@@ -81,8 +81,10 @@ Costmap2DROS::Costmap2DROS(
     "nav2_costmap_2d::InflationLayer"}
 {
   RCLCPP_INFO(get_logger(), "Creating Costmap");
-  auto options = rclcpp::NodeOptions().arguments(
-    {"--ros-args", "-r", std::string("__node:=") + get_name() + "_client", "--"});
+  auto options = rclcpp::NodeOptions()
+    .arguments({"--ros-args", "-r", std::string("__node:=") + get_name() + "_client", "--"})
+    .append_parameter_override("use_sim_time", get_parameter("use_sim_time").as_bool())
+    .automatically_declare_parameters_from_overrides(true);
   client_node_ = std::make_shared<rclcpp::Node>("_", options);
 
   std::vector<std::string> clearable_layers{"obstacle_layer", "voxel_layer", "range_layer"};
